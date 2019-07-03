@@ -1,5 +1,6 @@
 import FluentSQLite
 import Vapor
+import Authentication
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
@@ -10,6 +11,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     let router = EngineRouter.default()
     try routes(router)
     services.register(router, as: Router.self)
+    try services.register(AuthenticationProvider())
 
     // Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
@@ -27,5 +29,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     // Configure migrations
     var migrations = MigrationConfig()
+    migrations.add(model: User.self, database: .sqlite)
+    migrations.add(model: Token.self, database: .sqlite)
+    migrations.add(migration: AdminUser.self, database: .sqlite)
     services.register(migrations)
 }
