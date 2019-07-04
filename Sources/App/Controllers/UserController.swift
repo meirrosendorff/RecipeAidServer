@@ -32,6 +32,7 @@ struct UserController: RouteCollection {
     tokenAuthGroup.get("profilePic", use: fetchProfilePic)
     tokenAuthGroup.post("makeAdmin", use: makeAdmin)
     tokenAuthGroup.get(use: allUsers)
+    tokenAuthGroup.get("details", use: fetchUserDetails)
   }
   
   func addUser(_ req: Request) throws -> Future<User.Public> {
@@ -73,6 +74,11 @@ struct UserController: RouteCollection {
     } else {
       return ""
     }
+  }
+  
+  func fetchUserDetails(_ req: Request) throws -> User.Public {
+    
+    return try req.requireAuthenticated(User.self).getPublic()
   }
   
   func makeAdmin(_ req: Request) throws -> Future<HTTPStatus> {
